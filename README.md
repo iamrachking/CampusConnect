@@ -87,23 +87,6 @@ CampusConnect/
   - ODJO Segnon Ariand
   - SOULEYMANE Hosny
 
-## 📋 Fonctionnalités Principales
-
-### Module 2 : Système de Réservation
-**Acteurs** : Enseignants, Administrateurs, Étudiants
-
-**Fonctionnalités** :
-- Les enseignants peuvent réserver des salles de classe ou du matériel (vidéoprojecteurs, ordinateurs, etc.)
-- Les administrateurs valident ou rejettent les réservations
-- Les étudiants peuvent consulter la disponibilité des salles
-
-### Module 3 : Gestion de Projets Étudiants
-**Acteurs** : Étudiants, Encadrants
-
-**Fonctionnalités** :
-- Les étudiants peuvent créer un projet d'équipe (titre, description, membres)
-- Un encadrant peut suivre les projets qu'il supervise
-- Possibilité de déposer un fichier (rapport ou livrable)
 
 ## 📝 Workflow Git
 
