@@ -5,3 +5,66 @@
 [x-cloak] {
     display: none;
 }
+.fd-bg-secondary{
+    background-color: #19a6ec !important;
+}
+.fd-bg{
+    background-color:#3d5ee1 !important;
+}
+.fd-yl{
+    background-color: #f9d34e !important;
+}
+.login-image { background-image: url("/public/images/login-icon-02.png") ; background-repeat: no-repeat; background-position: top right;}
+.fd-bg-silver{
+    background-color: #F7F7FA;
+}
+.logo-image{
+    width: 40px;
+    height: 40px;
+}
+/* Styles pour la scrollbar */
+.overflow-x-auto {
+    scrollbar-width: thin;
+    scrollbar-color: #3d5ee1 #E5E7EB;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #E5E7EB;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background-color: #3d5ee1;
+    border-radius: 4px;
+    border: 2px solid #E5E7EB;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background-color: #3d5ee1;
+}
+.notification-dot {
+    width: 8px !important;
+    height: 8px !important;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+}
+
+@media (max-width: 640px) {
+    .absolute.right-0 {
+        right: auto;
+        left: 25%;
+        top: 35%;
+        border-radius: 50%;
+        width: 2px !important;
+        height: 14px !important;
+    
+    }
+}

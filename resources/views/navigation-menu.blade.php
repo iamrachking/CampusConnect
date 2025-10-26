@@ -1,4 +1,23 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ 
+    open: false,
+    confirmLogout() {
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: 'Vous êtes sur le point de vous déconnecter',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Oui, me déconnecter',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('logout-form') || document.getElementById('logout-form-mobile');
+                form.submit();
+            }
+        });
+    }
+}" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -6,7 +25,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-mark class="block h-9 w-auto" />
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Campus Connect" class="block h-10 w-auto">
                     </a>
                 </div>
 
@@ -111,12 +130,11 @@
                             <div class="border-t border-gray-200"></div>
 
                             <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}" x-data>
+                            <form method="POST" action="{{ route('logout') }}" id="logout-form">
                                 @csrf
 
-                                <x-dropdown-link href="{{ route('logout') }}"
-                                         @click.prevent="$root.submit();">
-                                    {{ __('Se déconnecter') }}
+                                <x-dropdown-link href="#" @click.prevent="confirmLogout()">
+                                    {{ __('Déconnexion') }}
                                 </x-dropdown-link>
                             </form>
                         </x-slot>
@@ -172,11 +190,10 @@
                 @endif
 
                 <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}" x-data>
+                <form method="POST" action="{{ route('logout') }}" id="logout-form-mobile">
                     @csrf
 
-                    <x-responsive-nav-link href="{{ route('logout') }}"
-                                   @click.prevent="$root.submit();">
+                    <x-responsive-nav-link href="#" @click.prevent="confirmLogout()">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
