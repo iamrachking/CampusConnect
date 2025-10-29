@@ -53,7 +53,6 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{asset('js/delete-confirmation.js')}} "></script> 
     <!-- Chart.js -->
     <script src="{{ asset('cdn/chartjs/chartjs.min.js') }}"></script>
     @if (session('success') || session('error') || session('info') || session('warning'))

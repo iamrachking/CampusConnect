@@ -72,9 +72,9 @@ class User extends Authenticatable
     /**
      * Get the user's full name.
      */
-    public function getNameAttribute(): string
+    public function getFullNameAttribute(): string
     {
-        return $this->prenom . ' ' . $this->nom;
+        return $this->nom . ' ' . $this->prenom;
     }
 
     // Relations
@@ -90,7 +90,7 @@ class User extends Authenticatable
 
     public function projetsEncadres(): HasMany
     {
-        return $this->hasMany(Projet::class, 'encadrant');
+        return $this->hasMany(Projet::class, 'encadrant_id');
     }
 
     public function equipes(): HasMany

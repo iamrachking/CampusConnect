@@ -11,6 +11,6 @@ class Salle extends Model
 
     public function reservations(): HasMany
     {
-        return $this->hasMany(Reservation::class, 'item_id')->where('item_type', 'salle');
+        return $this->hasMany(Reservation::class, 'item_id')->where('item_type', self::class);
     }
 }

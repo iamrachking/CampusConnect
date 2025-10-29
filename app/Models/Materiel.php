@@ -11,6 +11,6 @@ class Materiel extends Model
 
     public function reservations(): HasMany
     {
-        return $this->hasMany(Reservation::class, 'item_id')->where('item_type', 'materiel');
+        return $this->hasMany(Reservation::class, 'item_id')->where('item_type', self::class);
     }
 }
