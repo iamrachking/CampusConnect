@@ -57,6 +57,29 @@
                                       placeholder="Ex: Bâtiment Principal - 1er étage" required>{{ old('localisation', $salle->localisation) }}</textarea>
                         </div>
 
+                        <!-- Géolocalisation -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Géolocalisation (optionnel)</label>
+                            <p class="text-xs text-gray-500 mb-2">Cliquez sur la carte pour définir l'emplacement de la salle</p>
+                            <div id="map" style="height: 300px; width: 100%; border: 1px solid #ddd; border-radius: 8px;"></div>
+                            <div class="mt-2 grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="latitude" class="block text-xs text-gray-600 mb-1">Latitude</label>
+                                    <input type="number" step="any" name="latitude" id="latitude" 
+                                           value="{{ old('latitude', $salle->latitude) }}" 
+                                           class="w-full border-gray-300 rounded-md shadow-sm text-sm"
+                                           placeholder="Ex: 48.8566" readonly>
+                                </div>
+                                <div>
+                                    <label for="longitude" class="block text-xs text-gray-600 mb-1">Longitude</label>
+                                    <input type="number" step="any" name="longitude" id="longitude" 
+                                           value="{{ old('longitude', $salle->longitude) }}" 
+                                           class="w-full border-gray-300 rounded-md shadow-sm text-sm"
+                                           placeholder="Ex: 2.3522" readonly>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Disponibilité -->
                         <div class="mb-6">
                             <div class="flex items-center">
@@ -83,4 +106,59 @@
             </div>
         </div>
     </div>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Coordonnées par défaut ou coordonnées de la salle
+        const defaultLat = {{ old('latitude', $salle->latitude ?? '48.8566') }};
+        const defaultLng = {{ old('longitude', $salle->longitude ?? '2.3522') }};
+
+        // Initialiser la carte
+        const map = L.map('map').setView([defaultLat, defaultLng], 15);
+
+        // Ajouter la couche OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let marker = null;
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+
+        // Créer un marqueur initial au centre de la carte (toujours)
+        marker = L.marker([defaultLat, defaultLng], {
+            draggable: true
+        }).addTo(map);
+
+        // Mettre à jour les coordonnées quand on déplace le marqueur
+        marker.on('dragend', function(e) {
+            const position = marker.getLatLng();
+            latitudeInput.value = position.lat.toFixed(8);
+            longitudeInput.value = position.lng.toFixed(8);
+        });
+
+        // Mettre à jour le marqueur quand on clique sur la carte
+        map.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            
+            if (marker) {
+                marker.setLatLng([lat, lng]);
+            } else {
+                marker = L.marker([lat, lng], {draggable: true}).addTo(map);
+                marker.on('dragend', function(e) {
+                    const position = marker.getLatLng();
+                    latitudeInput.value = position.lat.toFixed(8);
+                    longitudeInput.value = position.lng.toFixed(8);
+                });
+            }
+            
+            latitudeInput.value = lat.toFixed(8);
+            longitudeInput.value = lng.toFixed(8);
+        });
+    </script>
 </x-app-layout>

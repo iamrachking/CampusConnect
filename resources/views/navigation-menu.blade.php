@@ -94,21 +94,24 @@
                 <div class="ms-3 relative">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                                <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                            <button type="button" class="inline-flex items-center space-x-3 px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                                <div class="text-right">
+                                    <div class="font-medium text-gray-900">{{ Auth::user()->getFullNameAttribute() }}</div>
+                                    <div class="text-xs text-gray-500">{{ Auth::user()->role->name }}</div>
+                                </div>
+                                @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                     <img class="size-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->prenom }} {{ Auth::user()->nom }}" />
-                                </button>
-                            @else
-                                <span class="inline-flex rounded-md">
-                                    <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                                        {{ Auth::user()->prenom }} {{ Auth::user()->nom }}
-
-                                        <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                        </svg>
-                                    </button>
-                                </span>
-                            @endif
+                                @else
+                                    <div class="size-8 rounded-full bg-gray-300 flex items-center justify-center">
+                                        <span class="text-gray-600 text-xs font-medium">
+                                            {{ strtoupper(substr(Auth::user()->prenom, 0, 1) . substr(Auth::user()->nom, 0, 1)) }}
+                                        </span>
+                                    </div>
+                                @endif
+                                <svg class="ms-1 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
                         </x-slot>
 
                         <x-slot name="content">
@@ -164,17 +167,22 @@
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="flex items-center px-4">
+            <div class="flex items-center px-4 space-x-3">
+                <div class="flex-1 text-left">
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->getFullNameAttribute() }}</div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->role->name }}</div>
+                </div>
                 @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                    <div class="shrink-0 me-3">
+                    <div class="shrink-0">
                         <img class="size-10 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->prenom }} {{ Auth::user()->nom }}" />
                     </div>
+                @else
+                    <div class="shrink-0 size-10 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span class="text-gray-600 text-sm font-medium">
+                            {{ strtoupper(substr(Auth::user()->prenom, 0, 1) . substr(Auth::user()->nom, 0, 1)) }}
+                        </span>
+                    </div>
                 @endif
-
-                <div>
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->prenom }} {{ Auth::user()->nom }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
             </div>
 
             <div class="mt-3 space-y-1">

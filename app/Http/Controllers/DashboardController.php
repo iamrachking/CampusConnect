@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Reservation;
 use App\Models\Salle;
@@ -33,9 +32,48 @@ class DashboardController extends Controller
             $stats['total_utilisateurs'] = User::count();
             $stats['total_salles'] = Salle::count();
             $stats['total_materiels'] = Materiel::count();
+            $stats['total_etudiants'] = User::whereHas('role', function($q) { $q->where('name', 'Étudiant'); })->count();
+            $stats['total_enseignants'] = User::whereHas('role', function($q) { $q->where('name', 'Enseignant'); })->count();
         } elseif ($user->role->name === 'Enseignant') {
+            // Statistiques réelles pour l'enseignant
             $stats['mes_reservations'] = Reservation::where('user_id', $user->id)->count();
             $stats['projets_encadres'] = Projet::where('encadrant_id', $user->id)->count();
+            
+            // Calculer les heures réelles de réservations cette semaine
+            $debutSemaine = now()->startOfWeek();
+            $finSemaine = now()->endOfWeek();
+            $reservationsCetteSemaine = Reservation::where('user_id', $user->id)
+                ->whereBetween('date_debut', [$debutSemaine, $finSemaine])
+                ->get();
+            
+            // Calculer le total d'heures
+            $heuresTotal = 0;
+            foreach($reservationsCetteSemaine as $reservation) {
+                $heuresTotal += $reservation->date_debut->diffInHours($reservation->date_fin);
+            }
+            $stats['heures_semaine'] = $heuresTotal;
+            $stats['cours_semaine'] = $reservationsCetteSemaine->count();
+            
+            // Trouver le jour le plus chargé et le moins chargé
+            $joursCharges = [];
+            $traductionJours = [
+                'Monday' => 'Lundi',
+                'Tuesday' => 'Mardi',
+                'Wednesday' => 'Mercredi',
+                'Thursday' => 'Jeudi',
+                'Friday' => 'Vendredi',
+                'Saturday' => 'Samedi',
+                'Sunday' => 'Dimanche'
+            ];
+            
+            foreach($reservationsCetteSemaine as $reservation) {
+                $jourEn = $reservation->date_debut->format('l');
+                $jourFr = $traductionJours[$jourEn] ?? $jourEn;
+                $joursCharges[$jourFr] = ($joursCharges[$jourFr] ?? 0) + 1;
+            }
+            arsort($joursCharges);
+            $stats['jour_plus_charge'] = !empty($joursCharges) ? array_key_first($joursCharges) : 'Aucun';
+            $stats['jour_moins_charge'] = !empty($joursCharges) ? array_key_last($joursCharges) : 'Aucun';
         } elseif ($user->role->name === 'Étudiant') {
             $stats['mes_projets'] = Projet::whereHas('equipes', function($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -51,8 +89,8 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
         
-        // Récupérer les projets récents
-        $recentProjets = Projet::with(['encadrant'])
+        // Récupérer les projets récents avec les équipes et utilisateurs
+        $recentProjets = Projet::with(['equipes.user', 'encadrant'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
@@ -71,11 +109,15 @@ class DashboardController extends Controller
         }
         
         foreach($recentProjets as $projet) {
+            // Trouver le créateur (chef de projet)
+            $createur = $projet->equipes->where('role_membre', 'Chef de projet')->first();
+            $nomCreateur = $createur && $createur->user ? $createur->user->getFullNameAttribute() : 'Un étudiant';
+            
             $recentActivities->push([
                 'type' => 'projet',
                 'title' => 'Nouveau projet',
-                'description' => '"' . $projet->titre . '" créé' . 
-                    ($projet->encadrant ? ' par ' . $projet->encadrant->getFullNameAttribute() : ''),
+                'description' => '"' . $projet->titre . '" créé par ' . $nomCreateur . 
+                    ($projet->encadrant ? ' et encadré par ' . $projet->encadrant->getFullNameAttribute() : ''),
                 'date' => $projet->created_at,
                 'status' => 'active',
                 'icon' => '📚'
@@ -84,6 +126,16 @@ class DashboardController extends Controller
         
         $recentActivities = $recentActivities->sortByDesc('date')->take(5);
 
-        return view('dashboard', compact('stats', 'recentActivities'));
+        // Pour l'admin : récupérer les réservations en attente
+        $pendingReservations = collect();
+        if ($user->role->name === 'Administrateur') {
+            $pendingReservations = Reservation::where('statut', 'pending')
+                ->with(['user', 'item'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+        }
+
+        return view('dashboard', compact('stats', 'recentActivities', 'pendingReservations'));
     }
 }

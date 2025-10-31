@@ -423,32 +423,53 @@ class ProjetController extends Controller
         }
 
         if (!$canAccess) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Accès non autorisé'
-            ], 403);
+            return redirect()->route('projets.show', $projet)
+                ->with('error', 'Accès non autorisé');
         }
 
-        $stats = [
-            'total_membres' => $projet->equipes()->count(),
-            'total_livrables' => $projet->livrables()->count(),
-            'dernier_livrable' => $projet->livrables()->latest()->first(),
-            'membres_par_role' => $projet->equipes()
-                ->selectRaw('role_membre, COUNT(*) as count')
-                ->groupBy('role_membre')
-                ->pluck('count', 'role_membre'),
-        ];
+        // Charger les relations nécessaires
+        $projet->load(['encadrant', 'equipes.user', 'livrables.user']);
 
-        return response()->json([
-            'success' => true,
-            'projet' => [
-                'id' => $projet->id,
-                'titre' => $projet->titre,
-                'description' => $projet->description,
-                'encadrant' => $projet->encadrant()->first()->name ?? 'Non assigné',
-                'created_at' => $projet->created_at->format('d/m/Y'),
-            ],
-            'stats' => $stats
-        ]);
+        // Calculer les statistiques
+        $totalMembres = $projet->equipes()->count();
+        $totalLivrables = $projet->livrables()->count();
+        $dernierLivrable = $projet->livrables()->latest()->first();
+        
+        // Membres par rôle
+        $membresParRole = $projet->equipes()
+            ->selectRaw('role_membre, COUNT(*) as count')
+            ->groupBy('role_membre')
+            ->get()
+            ->pluck('count', 'role_membre');
+
+        // Livrables par type
+        $livrablesParType = $projet->livrables()
+            ->selectRaw('type_livrable, COUNT(*) as count')
+            ->groupBy('type_livrable')
+            ->get()
+            ->pluck('count', 'type_livrable');
+
+        // Livrables par étudiant
+        $livrablesParEtudiant = $projet->livrables()
+            ->join('users', 'livrables.user_id', '=', 'users.id')
+            ->selectRaw('users.prenom, users.nom, COUNT(*) as count')
+            ->groupBy('users.id', 'users.prenom', 'users.nom')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'nom' => $item->prenom . ' ' . $item->nom,
+                    'count' => $item->count
+                ];
+            });
+
+        return view('projets.stats', compact(
+            'projet',
+            'totalMembres',
+            'totalLivrables',
+            'dernierLivrable',
+            'membresParRole',
+            'livrablesParType',
+            'livrablesParEtudiant'
+        ));
     }
 }

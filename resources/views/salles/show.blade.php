@@ -61,8 +61,27 @@
                                     <span class="font-medium text-gray-700">Localisation :</span>
                                     <p class="ml-2 text-gray-600">{{ $salle->localisation }}</p>
                                 </div>
+
+                                @if($salle->latitude && $salle->longitude)
+                                    <div>
+                                        <span class="font-medium text-gray-700">Coordonnées GPS :</span>
+                                        <p class="ml-2 text-gray-600 text-xs">{{ number_format($salle->latitude, 6) }}, {{ number_format($salle->longitude, 6) }}</p>
+                                    </div>
+                                @endif
                                 
                             </div>
+
+                            @if($salle->latitude && $salle->longitude)
+                                <div class="mt-4">
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Carte</h4>
+                                    <div id="map" style="height: 300px; width: 100%; border: 1px solid #ddd; border-radius: 8px;"></div>
+                                    <a href="https://www.google.com/maps?q={{ $salle->latitude }},{{ $salle->longitude }}" 
+                                       target="_blank" 
+                                       class="mt-2 inline-block text-sm text-blue-600 hover:text-blue-800">
+                                        Ouvrir dans Google Maps →
+                                    </a>
+                                </div>
+                            @endif
 
                             @if(Auth::user()->role->name === 'Enseignant')
                                 <div class="mt-6">
@@ -224,4 +243,27 @@
             dateFin.min = this.value;
         });
     </script>
+
+    @if($salle->latitude && $salle->longitude)
+        <!-- Leaflet CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <!-- Leaflet JS -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        
+        <script>
+            // Initialiser la carte avec les coordonnées de la salle
+            const map = L.map('map').setView([{{ $salle->latitude }}, {{ $salle->longitude }}], 17);
+
+            // Ajouter la couche OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Ajouter un marqueur à l'emplacement de la salle
+            L.marker([{{ $salle->latitude }}, {{ $salle->longitude }}])
+                .addTo(map)
+                .bindPopup('<strong>{{ addslashes($salle->nom_salle) }}</strong><br>{{ addslashes($salle->localisation) }}')
+                .openPopup();
+        </script>
+    @endif
 </x-app-layout>

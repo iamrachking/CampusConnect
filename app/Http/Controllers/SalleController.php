@@ -116,6 +116,8 @@ class SalleController extends Controller
             'capacite' => 'required|integer|min:1|max:1000',
             'localisation' => 'required|string|max:500',
             'disponible' => 'boolean',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
         if ($validator->fails()) {
@@ -130,6 +132,8 @@ class SalleController extends Controller
             'capacite' => $request->capacite,
             'localisation' => $request->localisation,
             'disponible' => $request->has('disponible') ? true : false,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
         ]);
 
         return redirect()->route('salles.show', $salle)
@@ -225,6 +229,8 @@ class SalleController extends Controller
             'capacite' => 'required|integer|min:1|max:1000',
             'localisation' => 'required|string|max:500',
             'disponible' => 'boolean',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
         if ($validator->fails()) {
@@ -239,6 +245,8 @@ class SalleController extends Controller
             'capacite' => $request->capacite,
             'localisation' => $request->localisation,
             'disponible' => $request->has('disponible') ? true : false,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
         ]);
 
         return redirect()->route('salles.show', $salle)
