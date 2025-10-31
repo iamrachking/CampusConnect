@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Projet extends Model
 {
-    protected $fillable = ['titre', 'description', 'encadrant'];
+    protected $fillable = ['titre', 'description', 'encadrant_id'];
 
     public function encadrant(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'encadrant');
+        return $this->belongsTo(User::class, 'encadrant_id');
     }
 
     public function equipes(): HasMany
