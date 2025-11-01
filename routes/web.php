@@ -11,7 +11,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
-    return view('welcome');
+    //return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::middleware([
@@ -23,10 +24,8 @@ Route::middleware([
     // Dashboard principal
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ========================================
     // MODULE 2 - RÉSERVATION DE SALLES/MATÉRIEL
-    // ========================================
-    
+
     // Routes pour les réservations
     Route::resource('reservations', ReservationController::class);
     Route::post('reservations/{reservation}/approve', [ReservationController::class, 'approve'])->name('reservations.approve')->middleware('role:Administrateur');
@@ -66,9 +65,8 @@ Route::middleware([
     Route::get('materiels/{materiel}', [MaterielController::class, 'show'])->name('materiels.show');
     Route::post('materiels/{materiel}/availability', [MaterielController::class, 'availability'])->name('materiels.availability');
 
-    // ========================================
+    
     // MODULE 3 - GESTION DE PROJETS ÉTUDIANTS
-    // ========================================
     
     // Routes pour les projets
     Route::resource('projets', ProjetController::class);
@@ -99,9 +97,8 @@ Route::middleware([
     Route::get('livrables/{livrable}/download', [LivrableController::class, 'download'])->name('livrables.download');
     Route::get('projets/{projet}/livrables/stats', [LivrableController::class, 'stats'])->name('projets.livrables.stats');
 
-    // ========================================
+    
     // ROUTES GÉNÉRALES POUR LES ÉQUIPES ET LIVRABLES
-    // ========================================
     
     // Routes pour lister toutes les équipes (pour les administrateurs uniquement)
     Route::get('equipes', [EquipeController::class, 'index'])->name('equipes.index')->middleware('role:Administrateur');
@@ -111,9 +108,7 @@ Route::middleware([
         return redirect()->route('projets.index');
     })->name('livrables.index');
 
-    // ========================================
     // GESTION DES UTILISATEURS (ADMIN UNIQUEMENT)
-    // ========================================
     
     // Routes pour la gestion des utilisateurs
     Route::middleware('role:Administrateur')->resource('users', UserController::class);
