@@ -79,7 +79,7 @@ class ProjetController extends Controller
                 ->with('error', 'Seuls les étudiants peuvent créer des projets.');
         }
 
-        // Récupérer les enseignants disponibles pour l'encadrement
+        // Récupérer les enseignants disponibles pour l'encadrement du projets creer 
         $enseignants = User::whereHas('role', function($query) {
             $query->where('name', 'Enseignant');
         })->get();

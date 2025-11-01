@@ -249,7 +249,7 @@ class LivrableController extends Controller
             'type_livrable' => $request->type_livrable,
         ];
 
-        // Traitement du nouveau fichier si fourni
+        // Traitement du nouveau fichier si fourni pour ne pas trainer avec des fichier unitile
         if ($request->hasFile('fichier')) {
             // Supprimer l'ancien fichier
             if ($livrable->url_livrable && Storage::disk('public')->exists($livrable->url_livrable)) {

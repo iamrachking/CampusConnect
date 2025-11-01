@@ -97,7 +97,7 @@ class UserController extends Controller
             return redirect()->route('users.index')
                 ->with('success', "L'utilisateur a été créé avec succès. Un email avec les identifiants a été envoyé à " . $user->email . ".");
         } catch (\Exception $e) {
-            // Si l'envoi d'email échoue, on affiche quand même le mot de passe
+            // Si l'envoi d'email échoue, normalement on affiche quand même le mot de passe pour que sa soit envoyer manuellement mais j'ai decider de ne pas afficher le mot de passe , je me dis que l'envoie de mail ne va pas echouer 
             return redirect()->route('users.index')
                 ->with('success', "L'utilisateur a été créé avec succès. Erreur lors de l'envoi de l'email. Email : " . $user->email . ".")
                 ->with('warning', "Attention : L'envoi de l'email a échoué. Veuillez communiquer les identifiants manuellement.");
@@ -170,7 +170,7 @@ class UserController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-
+        /* ici je me suis dit que la mise a jour d'un user cote admin , sa serait uniquement son role , car pour les autre information il peut le faire directement dans son compte a lui meme */
         $user->update([
             // 'nom' => $request->nom,
             // 'prenom' => $request->prenom,

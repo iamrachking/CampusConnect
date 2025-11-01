@@ -47,7 +47,7 @@ class ReservationController extends Controller
                 break;
         }
         
-        // Appliquer les filtres
+        // Application des filtres
         if ($filterStatut) {
             $query->where('statut', $filterStatut);
         }

@@ -371,7 +371,7 @@ class EquipeController extends Controller
                 ->with('error', 'Vous n\'avez pas l\'autorisation de retirer ce membre.');
         }
 
-        // Ne pas permettre au chef de projet de se retirer
+        // Ne pas permettre au chef de projet de se retirer sinon le projet n'aura pas de membre
         if ($equipe->role_membre === 'Chef de projet') {
             return redirect()->route('projets.show', $equipe->projet)
                 ->with('error', 'Le chef de projet ne peut pas être retiré. Transférez d\'abord le rôle à un autre membre.');

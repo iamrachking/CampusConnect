@@ -57,7 +57,7 @@ class MaterielController extends Controller
                 break;
         }
         
-        // Appliquer les filtres
+        // Application des filtres
         if ($filterDisponible !== null) {
             if ($filterDisponible === 'disponible') {
                 $query->where('disponible', true);
