@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Projet extends Model
 {
-    protected $fillable = ['titre', 'description', 'encadrant'];
+    protected $fillable = ['titre', 'description', 'encadrant_id', 'creator_id',];
 
     public function encadrant(): BelongsTo
     {
@@ -23,5 +23,10 @@ class Projet extends Model
     public function livrables(): HasMany
     {
         return $this->hasMany(Livrable::class);
+    }
+
+     public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'creator_id');
     }
 }
