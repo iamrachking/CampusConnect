@@ -1,90 +1,120 @@
-# Outil local: resumé_commandes
+# Résumé complet du projet et commandes (Windows)
 
-Ce fichier récapitule les commandes pour:
-- Démarrer rapidement le backend (Laravel) et le frontend (Vite)
-- Préparer l’environnement local si nécessaire
-- Pousser le projet sur la branche `Joseph_branch` avec les bons filtres
+Ce document présente CampusConnect, ses fonctionnalités clés, sa structure, les endpoints utiles et fournit un guide de démarrage avec un résumé des commandes pour lancer et bien faire tourner le projet.
 
-## Démarrer les serveurs
-- Backend (Laravel):
+## Aperçu du projet
+- Application Laravel pour la gestion des réservations de salles et de matériels.
+- Rôles: Administrateur, Enseignant, Étudiant.
+- Authentification: Jetstream/Fortify, Sanctum (API et session web).
+- Frontend: Vite + Blade, assets dans `public/` et `resources/`.
+- Disponibilité côté Étudiant: mise à jour auto 5s et bouton “Actualiser”.
+- Admin: interface épurée (pas d’affichage de disponibilité), actions d’approbation/rejet.
+
+## Fonctionnalités principales
+- Réservation: création, approbation (admin), rejet, affichage des demandes.
+- Items: Salles et Matériels, listés pour Student/Teacher, visibles en Admin.
+- Disponibilité en temps réel: calcul serveur via `CURRENT_TIMESTAMP` pour éviter les décalages de fuseau.
+- Dropdowns Student/Teacher: affichent tous les éléments, ajoutent “(Occupé)” aux indisponibles.
+
+## Structure de répertoires
+```
+CampusConnect/
+├── app/Http/Controllers/           # Contrôleurs web et API
+├── app/Models/                      # Modèles (Reservation, Salle, Materiel)
+├── config/                          # Config Laravel (sanctum, app, etc.)
+├── database/                        # Migrations, seeders
+├── public/                          # app.js, app.css, front controller
+├── resources/views/                 # Vues Blade (admin, student, spa)
+├── routes/                          # web.php, api.php
+├── tools/php83/                     # PHP portable (Windows)
+└── vite.config.js                   # Config Vite
+```
+
+## Endpoints utiles (API)
+- Auth:
+  - `POST /api/login` → renvoie `{ token: <plainTextToken> }` (Sanctum)
+  - `GET /api/user` (protégé `auth:sanctum`)
+- Étudiant:
+  - `GET /api/student/salles` → objets avec `disponible: true|false`
+  - `GET /api/student/materiels` → objets avec `disponible: true|false`
+- Items (général):
+  - `GET /api/items/salles` → disponibilité calculée côté serveur
+  - `GET /api/items/materiels` → disponibilité calculée côté serveur
+- Admin:
+  - `GET /api/admin/items/salles` | `GET /api/admin/items/materiels`
+  - `POST /api/admin/items/salles` | `DELETE /api/admin/items/salles/{id}`
+  - `POST /api/admin/items/materiels` | `DELETE /api/admin/items/materiels/{id}`
+  - Réservations: approbation/rejet via routes web (voir vues Admin)
+
+## Interfaces et URLs
+- Connexion: `http://127.0.0.1:8000/login`
+- Tableau de bord: `http://127.0.0.1:8000/dashboard`
+- Étudiant (SPA épurée): `http://127.0.0.1:8000/student/availability` et `.../create`
+- Enseignant (SPA épurée): `http://127.0.0.1:8000/teacher` et `.../create`
+- Admin: `http://127.0.0.1:8000/admin/reservations`, listes items
+
+## Prérequis
+- Windows 10/11, Git (optionnel), Node.js 18+
+- Option A: PHP portable inclus `tools/php83/php.exe` + Composer PHAR `tools/composer.phar`
+- Option B: PHP + Composer installés globalement
+
+## Mise en place pas-à-pas
+1) Ouvrir le dossier projet
+- `cd "d:\Personnal Folder\projets_persos\class project\CampusConnect"`
+
+2) Installer dépendances
+- Node: `npm install`
+- PHP portable: `./tools/php83/php.exe ./tools/composer.phar install`
+- PHP global: `composer install`
+
+3) Configurer `.env`
+- Copier: `copy .env.example .env`
+- Générer clé:
+  - Portable: `./tools/php83/php.exe ./artisan key:generate --ansi`
+  - Global: `php artisan key:generate --ansi`
+- Base SQLite recommandée:
+  - Créer fichier: `ni database/database.sqlite -ItemType File`
+  - `.env`: `DB_CONNECTION=sqlite`, `DB_DATABASE=database/database.sqlite`
+
+4) Migrations et seeders
+- Portable: `./tools/php83/php.exe ./artisan migrate --seed --ansi`
+- Global: `php artisan migrate --seed --ansi`
+
+5) Assets (Vite)
+- Dév: `cmd /c npm run dev`
+- Prod: `cmd /c npm run build`
+
+6) Démarrer serveur Laravel
+- Portable: `./tools/php83/php.exe ./artisan serve --ansi`
+- Global: `php artisan serve --ansi`
+- URL: `http://127.0.0.1:8000/`
+
+## Comptes de test
+- Admin: `admin@example.com` / `password`
+- Enseignant: `teacher@example.com` / `password`
+- Étudiant: `student@example.com` / `password`
+
+## Astuces et dépannage
+- Si PowerShell bloque `npm run ...` → utilisez `cmd /c npm run dev|build`.
+- Si “Vite manifest not found” → lancez `npm run dev` ou `npm run build`.
+- Si DB SQLite manquante → créez `database\database.sqlite` et refaites migrate/seed.
+- Sans websockets, l’auto-refresh côté Étudiant est de 5s; utilisez le bouton “Actualiser” pour forcer la mise à jour.
+
+---
+
+## Résumé des commandes (copier/coller)
+- Dossier projet:
   - `cd "d:\Personnal Folder\projets_persos\class project\CampusConnect"`
-  - `.\tools\php83\php.exe .\artisan serve --ansi`
-  - URL: `http://127.0.0.1:8000/`
-- Frontend (Vite):
-  - `cmd /c npm run dev`
-  - URL: `http://localhost:5173/`
-
-## Préparer l’environnement local (si première ouverture ou après un pull)
-- Installer dépendances PHP:
-  - `.\tools\php83\php.exe .\.tools\composer.phar install`
-- Générer la clé d’application:
-  - `.\tools\php83\php.exe .\artisan key:generate --ansi`
-- Migrations + seeders (base SQLite):
-  - `.\tools\php83\php.exe .\artisan migrate --seed --ansi`
-
-## Pousser sur GitHub (branche Joseph_branch)
-- Basculer/Créer la branche:
-  - `git checkout Joseph_branch`  (ou `git checkout -b Joseph_branch` si elle n’existe pas)
-- (Optionnel) Définir l’auteur local pour ce repo:
-  - `git config user.name "Joseph"`
-  - `git config user.email "joseph@example.com"`
-- Définir la remote si nécessaire:
-  - `git remote add origin https://github.com/<votre_compte>/<votre_repo>.git`
-- Vérifier que les outils locaux sont ignorés (déjà configuré):
-  - `.tools/`
-  - `tools/php83/`
-- Commit + push:
-  - `git add .`
-  - `git commit -m "Update: travail en cours / corrections / features"`
-  - `git push -u origin Joseph_branch`
-
-## Raccourcis utiles
-- Nettoyer la config Laravel:
-  - `.\tools\php83\php.exe .\artisan config:clear`
-- Vérifier version PHP portable:
-  - `.\tools\php83\php.exe -v`
-- Vérifier les extensions chargées (HTTPS, SQLite, chaînes):
-  - `.\tools\php83\php.exe -m | findstr /i "openssl curl pdo_sqlite sqlite3 mbstring"`
-
-## Notes
- - Base de données: `.env` utilise `DB_CONNECTION=sqlite` et `DB_DATABASE=database/database.sqlite`.
- - Le warning `ctype` au démarrage est bénin pour le dev local; migrations/serveur fonctionnent.
- - Pour exposer Vite sur le réseau local: `npm run dev -- --host`.
-
-## Accès à l’interface et URL
-
-- URL locale de l’application: `http://127.0.0.1:8000/`
-- Page de connexion: `http://127.0.0.1:8000/login`
-
-### Administration (Administrateur)
-- Salles: `http://127.0.0.1:8000/admin/salles`
-- Matériels: `http://127.0.0.1:8000/admin/materiels`
-- Réservations en attente: `http://127.0.0.1:8000/admin/reservations`
-
-#### Connexion Administrateur (identifiants de test)
-- Email: `admin@example.com`
-- Mot de passe: `password`
-- Prérequis: exécuter les migrations et seeders (`php artisan migrate --force && php artisan db:seed --force`). Ces comptes sont créés par `database/seeders/DatabaseSeeder.php` via la factory (mot de passe par défaut: `password`).
-
-### Enseignant
-- Mes Réservations: `http://127.0.0.1:8000/reservations`
-- Nouvelle réservation: `http://127.0.0.1:8000/reservations/create`
-
-#### Connexion Enseignant (identifiants de test)
-- Email: `teacher@example.com`
-- Mot de passe: `password`
-
-### Étudiant
-- Disponibilité des salles: `http://127.0.0.1:8000/availability`
-
-## Assets frontend (Vite)
-
-- En développement, démarrer Vite: `npm run dev` (dans le dossier `CampusConnect`)
-- En production ou sans Vite en mode dev, construire les assets: `npm run build` (génère `public/build/manifest.json`)
-- Si l’erreur « Vite manifest not found » apparaît, lancez `npm run dev` ou `npm run build`.
-
-## Base de données
-
-- Config par défaut `.env`: MySQL (`campusconnect`) ou SQLite selon votre setup.
-- Pour MySQL: réglez `DB_CONNECTION=mysql` et adaptez `DB_*`, puis `php artisan migrate --force && php artisan db:seed --force`.
-- Pour SQLite: assurez `database\database.sqlite` existe, et `php artisan migrate --seed --force`.
+- Installer dépendances:
+  - `npm install`
+  - `./tools/php83/php.exe ./tools/composer.phar install` (ou `composer install`)
+- Initialiser l’app:
+  - `copy .env.example .env`
+  - `./tools/php83/php.exe ./artisan key:generate --ansi` (ou `php artisan key:generate --ansi`)
+  - `ni database/database.sqlite -ItemType File`
+  - `./tools/php83/php.exe ./artisan migrate --seed --ansi` (ou `php artisan migrate --seed --ansi`)
+- Démarrer:
+  - `cmd /c npm run dev` (dev) ou `cmd /c npm run build` (prod)
+  - `./tools/php83/php.exe ./artisan serve --ansi` (ou `php artisan serve --ansi`)
+- Tests (optionnel):
+  - `php artisan test --ansi`

@@ -2,6 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  /* Boutons */
+  .btn { @apply inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2; }
+  .btn-primary { @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-600; }
+  .btn-secondary { @apply bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-300; }
+  .btn-danger { @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-600; }
+
+  /* Cartes */
+  .card { @apply bg-white rounded-xl border border-gray-200 shadow-sm; }
+  .card-header { @apply border-b border-gray-200 px-6 py-4 text-lg font-semibold text-gray-900; }
+  .card-body { @apply p-6; }
+
+  /* Tableaux */
+  .table { @apply w-full text-left text-sm; }
+  .table thead th { @apply px-3 py-2 font-semibold text-gray-600; }
+  .table tbody tr { @apply border-t border-gray-100 hover:bg-gray-50; }
+  .table td { @apply px-3 py-2 text-gray-900; }
+
+  /* Badges */
+  .badge { @apply inline-flex items-center rounded-md px-2 py-1 text-xs font-medium; }
+  .badge-success { @apply bg-green-100 text-green-700; }
+  .badge-danger { @apply bg-red-100 text-red-700; }
+
+  /* Inputs */
+  .input { @apply w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500; }
+}
+
 [x-cloak] {
     display: none;
 }

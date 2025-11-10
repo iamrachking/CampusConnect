@@ -24,7 +24,10 @@ class MaterielSeeder extends Seeder
         ];
 
         foreach ($materiels as $materiel) {
-            \App\Models\Materiel::create($materiel);
+            \App\Models\Materiel::updateOrCreate(
+                ['nom_materiel' => $materiel['nom_materiel']],
+                ['disponible' => $materiel['disponible']]
+            );
         }
     }
 }

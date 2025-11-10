@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white/80 backdrop-blur border-b border-gray-200">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -8,10 +8,11 @@
                     <a href="{{ route('dashboard') }}">
                         <x-application-mark class="block h-9 w-auto" />
                     </a>
+                    <span class="ms-2 text-lg font-semibold text-gray-900">CampusConnect</span>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden gap-6 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
@@ -33,6 +34,9 @@
                     @elseif($roleName === 'Étudiant')
                         <x-nav-link href="{{ route('availability.index') }}" :active="request()->routeIs('availability.*')">
                             Disponibilité
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('student.reservations.create') }}" :active="request()->routeIs('student.reservations.*')">
+                            Demande de réservation
                         </x-nav-link>
                     @endif
                 </div>

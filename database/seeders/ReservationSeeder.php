@@ -30,7 +30,7 @@ class ReservationSeeder extends Seeder
         $materiel = Materiel::first();
 
         if ($salle) {
-            Reservation::create([
+            Reservation::firstOrCreate([
                 'user_id' => $teacher->id,
                 'item_type' => Salle::class,
                 'item_id' => $salle->id,
@@ -42,7 +42,7 @@ class ReservationSeeder extends Seeder
         }
 
         if ($materiel) {
-            Reservation::create([
+            Reservation::firstOrCreate([
                 'user_id' => $teacher->id,
                 'item_type' => Materiel::class,
                 'item_id' => $materiel->id,

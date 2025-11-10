@@ -1,0 +1,76 @@
+:root{--bg:#0b1020;--card:rgba(255,255,255,.08);--card-border:rgba(255,255,255,.12);--text:#e8ecf2;--muted:#a7b0c0;--primary:#7c5cff;--primary-2:#4cc9f0;--success:#39d98a;--danger:#ff6b6b}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);background:radial-gradient(1200px 800px at 70% 10%,#101735 0%,var(--bg) 60%);display:flex;flex-direction:column;min-height:100vh}
+.bg-animated{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.bg-animated::before,.bg-animated::after{content:"";position:absolute;width:600px;height:600px;filter:blur(70px);background:conic-gradient(from 180deg at 50% 50%,rgba(124,92,255,.25),rgba(76,201,240,.18),rgba(57,217,138,.18),rgba(124,92,255,.25));animation:float 14s ease-in-out infinite}
+.bg-animated::after{right:-100px;bottom:-120px;animation-duration:18s}
+.bg-animated::before{left:-120px;top:-150px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+.app-header,.app-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 28px;border-bottom:1px solid var(--card-border);backdrop-filter:saturate(1.2) blur(8px);background:linear-gradient(to bottom,rgba(255,255,255,.06),rgba(255,255,255,.02))}
+.app-footer{border-top:1px solid var(--card-border);border-bottom:none;justify-content:center;text-align:center}
+.app-main{flex:1}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.2px}
+.logo{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--primary-2))}
+.title{font-size:18px}
+.top-actions{display:flex;align-items:center;gap:10px}
+.container{max-width:980px;margin:32px auto;padding:0 20px}
+.view{display:none}
+.view.active{display:block}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:20px;padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.card-title{margin:0 0 12px;font-size:20px;font-weight:700}
+.muted{color:var(--muted)}
+.split{display:grid;grid-template-columns:minmax(240px,280px) minmax(0,1fr);gap:20px}
+.sidebar{padding:6px 0}
+.content{display:block}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.full{grid-column:1/-1}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.form-grid label{display:flex;flex-direction:column;gap:8px}
+.form-grid input,.form-grid select{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.06));border:1px solid var(--card-border);color:var(--text);padding:10px 12px;border-radius:12px;width:100%;height:44px;font-size:14px}
+.form-grid input:focus,.form-grid select:focus{outline:none;border-color:var(--primary-2);box-shadow:0 0 0 3px rgba(76,201,240,.25)}
+.form-grid label span{font-size:12px;color:var(--muted);font-weight:600}
+.error{margin-top:8px;color:var(--danger);font-weight:600}
+.btn{border:1px solid transparent;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;transition:.2s ease}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:var(--card-border);color:var(--text)}
+.btn.ghost:hover{background:rgba(255,255,255,.06)}
+.btn.small{padding:6px 10px;border-radius:10px}
+.btn.success{background:var(--success);color:#0b0f1a}
+.btn.danger{background:var(--danger);color:#fff}
+.table{width:100%;border-radius:14px;border:1px solid var(--card-border);overflow:auto}
+.table table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:12px 14px;border-bottom:1px solid var(--card-border);text-align:left;vertical-align:middle}
+.table th{background:rgba(255,255,255,.06);font-weight:700}
+.table tr:hover td{background:rgba(255,255,255,.03)}
+.list{display:grid;gap:10px}
+.list .item{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:12px;padding:10px 12px}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.badge.ok{background:rgba(57,217,138,.2);color:#7ff0b5}
+.badge.nok{background:rgba(255,107,107,.16);color:#ff9c9c}
+@media (max-width:980px){.split{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+.btn.primary{box-shadow:0 8px 18px rgba(124,92,255,.25)}
+.btn.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.table{width:100%;border-radius:14px;border:1px solid var(--card-border);overflow:auto}
+/* Login view compact center */
+#view-login{min-height:calc(100vh - 160px)}
+#view-login.view.active{display:grid;place-items:center}
+#view-login .card{width:100%;max-width:420px}
+#view-login .form-grid{grid-template-columns:1fr;gap:16px}
+
+/* Responsive cards for admin list */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.card-item{display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:12px;padding:12px}
+.card-item .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-item .meta{color:var(--muted);font-size:12px}
+
+/* Espacement entre sections/formulaires */
+.form-section{margin-bottom:24px}
+
+/* Amélioration lisibilité et scroll des dropdowns (select) */
+.form-grid select{background:#fff;color:#000;appearance:auto}
+/* Couleurs des options du dropdown uniquement */
+.form-grid select option{background:#fff;color:#000}
+/* S’assurer que le menu ne soit pas masqué et que le select soit au-dessus */
+.form-grid select{position:relative;z-index:2}

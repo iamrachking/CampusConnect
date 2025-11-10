@@ -125,4 +125,65 @@ class ReservationController extends Controller
             'date_fin' => $dateFin,
         ]);
     }
+
+    // Étudiants: formulaire de demande de réservation
+    public function studentCreate()
+    {
+        $salles = Salle::orderBy('nom_salle')->get();
+        $materiels = Materiel::orderBy('nom_materiel')->get();
+        return view('student.reservations.create', compact('salles', 'materiels'));
+    }
+
+    // Étudiants: soumission de la demande de réservation
+    public function studentStore(Request $request)
+    {
+        $validated = $request->validate([
+            'item_type' => 'required|in:App\\Models\\Salle,App\\Models\\Materiel',
+            'item_id' => 'required|integer',
+            'date_debut' => 'required|date_format:Y-m-d\\TH:i',
+            'date_fin' => 'required|date_format:Y-m-d\\TH:i|after:date_debut',
+            'motif' => 'required|string',
+        ]);
+
+        if ($validated['item_type'] === Salle::class) {
+            if (!Salle::whereKey($validated['item_id'])->exists()) {
+                return back()->withErrors(['item_id' => 'Salle introuvable'])->withInput();
+            }
+        } else {
+            if (!Materiel::whereKey($validated['item_id'])->exists()) {
+                return back()->withErrors(['item_id' => 'Matériel introuvable'])->withInput();
+            }
+        }
+
+        $start = Carbon::createFromFormat('Y-m-d\\TH:i', $validated['date_debut']);
+        $end = Carbon::createFromFormat('Y-m-d\\TH:i', $validated['date_fin']);
+
+        $overlap = Reservation::where('item_type', $validated['item_type'])
+            ->where('item_id', $validated['item_id'])
+            ->where(function ($q) use ($start, $end) {
+                $q->whereBetween('date_debut', [$start, $end])
+                  ->orWhereBetween('date_fin', [$start, $end])
+                  ->orWhere(function ($q2) use ($start, $end) {
+                      $q2->where('date_debut', '<=', $start)
+                         ->where('date_fin', '>=', $end);
+                  });
+            })
+            ->exists();
+
+        if ($overlap) {
+            return back()->withErrors(['date_debut' => 'Créneau déjà réservé'])->withInput();
+        }
+
+        Reservation::create([
+            'user_id' => Auth::id(),
+            'item_type' => $validated['item_type'],
+            'item_id' => $validated['item_id'],
+            'date_debut' => $start,
+            'date_fin' => $end,
+            'statut' => 'pending',
+            'motif' => $validated['motif'],
+        ]);
+
+        return redirect()->route('availability.index')->with('status', 'Demande de réservation envoyée');
+    }
 }

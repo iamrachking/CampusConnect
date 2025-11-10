@@ -1,13 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SalleController;
 use App\Http\Controllers\MaterielController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\AdminReservationController;
+use App\Http\Controllers\Clean\AdminPanelController;
+use App\Http\Controllers\Clean\TeacherPanelController;
+use App\Http\Controllers\Clean\StudentPanelController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('spa');
 });
 
 Route::middleware([
@@ -16,32 +20,43 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
+        $user = request()->user();
+        if (!$user || !$user->role) {
+            abort(403, 'Accès interdit');
+        }
+
+        $role = $user->role->name;
+        if ($role === 'Administrateur') {
+            return redirect()->route('clean.admin.reservations');
+        }
+        if ($role === 'Enseignant') {
+            return redirect()->route('clean.teacher.index');
+        }
+        if ($role === 'Étudiant') {
+            return redirect()->route('clean.student.availability');
+        }
+
         return view('dashboard');
     })->name('dashboard');
 
-    // Administration: Salles & Matériels (Administrateur uniquement)
+    // Administration épurée: Réservations en attente (Administrateur uniquement)
     Route::middleware(['role:Administrateur'])->group(function () {
-        Route::resource('admin/salles', SalleController::class)->names('admin.salles');
-        Route::post('admin/salles/{salle}/toggle', [SalleController::class, 'toggle'])->name('admin.salles.toggle');
-
-        Route::resource('admin/materiels', MaterielController::class)->names('admin.materiels');
-        Route::post('admin/materiels/{materiel}/toggle', [MaterielController::class, 'toggle'])->name('admin.materiels.toggle');
-
-        // Réservations en attente
-        Route::get('admin/reservations', [AdminReservationController::class, 'index'])->name('admin.reservations.index');
-        Route::post('admin/reservations/{reservation}/approve', [AdminReservationController::class, 'approve'])->name('admin.reservations.approve');
-        Route::post('admin/reservations/{reservation}/reject', [AdminReservationController::class, 'reject'])->name('admin.reservations.reject');
+        Route::get('admin/reservations', [AdminPanelController::class, 'index'])->name('clean.admin.reservations');
+        Route::post('admin/reservations/{reservation}/approve', [AdminPanelController::class, 'approve'])->name('clean.admin.reservations.approve');
+        Route::post('admin/reservations/{reservation}/reject', [AdminPanelController::class, 'reject'])->name('clean.admin.reservations.reject');
     });
 
-    // Enseignants: créer et consulter ses réservations
+    // Enseignants épuré: liste et création
     Route::middleware(['role:Enseignant'])->group(function () {
-        Route::get('reservations', [ReservationController::class, 'index'])->name('reservations.index');
-        Route::get('reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
-        Route::post('reservations', [ReservationController::class, 'store'])->name('reservations.store');
+        Route::get('teacher', [TeacherPanelController::class, 'index'])->name('clean.teacher.index');
+        Route::get('teacher/create', [TeacherPanelController::class, 'create'])->name('clean.teacher.create');
+        Route::post('teacher', [TeacherPanelController::class, 'store'])->name('clean.teacher.store');
     });
 
-    // Étudiants: consulter disponibilité des salles
+    // Étudiants épuré: disponibilité et demande
     Route::middleware(['role:Étudiant'])->group(function () {
-        Route::get('availability', [ReservationController::class, 'availability'])->name('availability.index');
+        Route::get('student/availability', [StudentPanelController::class, 'availability'])->name('clean.student.availability');
+        Route::get('student/create', [StudentPanelController::class, 'create'])->name('clean.student.create');
+        Route::post('student', [StudentPanelController::class, 'store'])->name('clean.student.store');
     });
 });

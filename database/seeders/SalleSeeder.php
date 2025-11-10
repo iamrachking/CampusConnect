@@ -46,7 +46,14 @@ class SalleSeeder extends Seeder
         ];
 
         foreach ($salles as $salle) {
-            \App\Models\Salle::create($salle);
+            \App\Models\Salle::updateOrCreate(
+                ['nom_salle' => $salle['nom_salle']],
+                [
+                    'capacite' => $salle['capacite'],
+                    'disponible' => $salle['disponible'],
+                    'localisation' => $salle['localisation']
+                ]
+            );
         }
     }
 }
