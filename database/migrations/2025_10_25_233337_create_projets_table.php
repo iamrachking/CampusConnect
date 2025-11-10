@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('titre');
             $table->text('description');
-            $table->foreignId('encadrant')->constrained('users');
+            $table->foreignId('encadrant_id')->constrained('users');
             $table->timestamps();
         });
     }

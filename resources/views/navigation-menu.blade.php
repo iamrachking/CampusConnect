@@ -15,6 +15,26 @@
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @php($roleName = optional(Auth::user()->role)->name)
+                    @if($roleName === 'Administrateur')
+                        <x-nav-link href="{{ route('admin.salles.index') }}" :active="request()->routeIs('admin.salles.*')">
+                            Salles
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.materiels.index') }}" :active="request()->routeIs('admin.materiels.*')">
+                            Matériels
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('admin.reservations.index') }}" :active="request()->routeIs('admin.reservations.*')">
+                            Réservations
+                        </x-nav-link>
+                    @elseif($roleName === 'Enseignant')
+                        <x-nav-link href="{{ route('reservations.index') }}" :active="request()->routeIs('reservations.*')">
+                            Mes Réservations
+                        </x-nav-link>
+                    @elseif($roleName === 'Étudiant')
+                        <x-nav-link href="{{ route('availability.index') }}" :active="request()->routeIs('availability.*')">
+                            Disponibilité
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 

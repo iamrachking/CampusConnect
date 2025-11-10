@@ -15,19 +15,37 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seeders pour les données de base
+        // 1) Rôles d'abord (FK sur users.role_id)
         $this->call([
             RoleSeeder::class,
-            SalleSeeder::class,
-            MaterielSeeder::class,
         ]);
 
-        // Créer un utilisateur de test
-        User::factory()->create([
-            'nom' => 'John',
-            'prenom' => 'Doe',
-            'email' => 'test@example.com',
-            'role_id' => 1, // Administrateur
+        // 2) Créer / assurer les utilisateurs de test
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'nom' => 'Admin',
+                'prenom' => 'Test',
+                'password' => User::factory()->make()->password ?? \Illuminate\Support\Facades\Hash::make('password'),
+                'role_id' => 1, // Administrateur
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'teacher@example.com'],
+            [
+                'nom' => 'Teacher',
+                'prenom' => 'Test',
+                'password' => User::factory()->make()->password ?? \Illuminate\Support\Facades\Hash::make('password'),
+                'role_id' => 2, // Enseignant
+            ]
+        );
+
+        // 3) Seeders dépendants
+        $this->call([
+            SalleSeeder::class,
+            MaterielSeeder::class,
+            ReservationSeeder::class,
         ]);
     }
 }
