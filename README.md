@@ -50,6 +50,11 @@ composer run dev
 php artisan serve
 npm run dev
 ```
+### Compte admin de test par defaut
+
+```
+email : test@example.com
+mot de passe : password123
 
 ## 📁 Structure du Projet
 
@@ -94,13 +99,7 @@ CampusConnect/
 - **`main`** : Branche principale (PERSONNE n'écrit directement dessus)
 - **`prenom`** : Chaque membre crée sa propre branche avec son prénom
 
-### Règles importantes
-- ✅ **Toujours créer une branche en son nom au début**
-- ✅ **Vérifier qu'on est bien sur sa propre branche avant de commiter**
-- ✅ **Ne jamais commiter sur la branche d'autrui ou sur main**
-
-
-## 🚨 Règles Importantes
+### 🚨 Règles Importantes
 
 - ✅ **Toujours créer une branche en son nom au début**
 - ✅ **Vérifier qu'on est bien sur sa propre branche avant de commiter**
