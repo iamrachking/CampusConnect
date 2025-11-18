@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('item_type', ['salle', 'materiel']);
+            $table->string('item_type');
             $table->unsignedBigInteger('item_id');
             $table->datetime('date_debut');
             $table->datetime('date_fin');
