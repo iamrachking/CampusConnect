@@ -55,6 +55,7 @@ npm run dev
 ```
 email : test@example.com
 mot de passe : password123
+```
 
 ## 📁 Structure du Projet
 
